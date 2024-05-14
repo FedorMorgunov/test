@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        #videoContainer {
+            width: 50%; /* Adjust the width as needed */
+            margin: auto;
+            position: relative;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+        #customControls {
+            position: absolute;
+            bottom: 10px; /* Adjust the position as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="videoContainer">
+        <video id="videoPlayer">
+            <source src="{{ output_path }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div id="customControls">
+            <button id="playButton">Play</button>
+            <button id="pauseButton">Pause</button>
+            <button id="captureButton">Capture Frame</button>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('videoPlayer');
+        const playButton = document.getElementById('playButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const captureButton = document.getElementById('captureButton');
+
+        playButton.addEventListener('click', () => {
+            video.play();
+        });
+
+        pauseButton.addEventListener('click', () => {
+            video.pause();
+        });
+
+        captureButton.addEventListener('click', () => {
+            captureFrame();
+        });
+
+        function captureFrame() {
+            // Get the current time of the video
+            let currentTime = video.currentTime;
+
+            // Send an AJAX request to the backend to save the frame
+            fetch(`/capture_frame?time=${currentTime}`)
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Frame captured successfully');
+                    } else {
+                        console.error('Failed to capture frame');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error capturing frame:', error);
+                });
+        }
+    </script>
+</body>
+</html>
